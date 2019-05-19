@@ -9,12 +9,16 @@ from allauth.socialaccount.models import SocialAccount
 
 def home(request):
     if request.user.is_authenticated:
-        social_account = SocialAccount.objects.get(user=request.user)
-        context_dict = {
-            'is_authenticated': True,
-            'fb_id': social_account.uid,
-            'full_name': request.user.get_full_name()
-        }
+        try:
+            social_account = SocialAccount.objects.get(user=request.user)
+            context_dict = {
+                'is_authenticated': True,
+                'fb_id': social_account.uid,
+                'full_name': request.user.get_full_name()
+            }
+        except SocialAccount.DoesNotExist:
+            logout(request)
+            context_dict = {'is_authenticated': False}
     else:
         context_dict = {'is_authenticated': False}
 
